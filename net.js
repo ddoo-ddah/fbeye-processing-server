@@ -1,31 +1,51 @@
 const tls = require('tls');
 const fs = require('fs');
 
-const connections = [];
-let i = 0;
+let server;
+let connections;
 
-const server = tls.createServer({
-    key: fs.readFileSync('privkey.key'),
-    cert: fs.readFileSync('cert.crt')
-}, socket => {
-    const connection = {
-        id: i++,
-        socket,
-        address: socket.address()
-    };
-    connections.push(connection);
-    console.log(connection.address, `is connected. ${connection.id}`);
+const open = (onConnectedCallback, onReceivedCallback) => {
+    connections = [];
+    let i = 0;
 
-    socket.on('data', data => {
-        console.log(`${connection.id}: ${data.toString()}`);
-    }).on('end', () => {
-        console.log(connection.address, `is disconnected. ${connection.id}`);
-        connections.splice(connections.indexOf(connection), 1);
+    server = tls.createServer({
+        key: fs.readFileSync('privkey.key'),
+        cert: fs.readFileSync('cert.crt')
+    }, socket => {
+        const connection = {
+            id: i++,
+            socket,
+            address: socket.address()
+        };
+        connections.push(connection);
+        console.log(connection.address, `is connected. ${connection.id}`);
+
+        socket.on('data', data => {
+            if (typeof onReceivedCallback == 'function') {
+                onReceivedCallback(connection, data);
+            }
+        }).on('end', () => {
+            console.log(connection.address, `is disconnected. ${connection.id}`);
+            connections.splice(connections.indexOf(connection), 1);
+        }).on('error', err => {
+            console.error(err);
+            connections.splice(connections.indexOf(connection), 1);
+        });
+
+        if (typeof onConnectedCallback == 'function') {
+            onConnectedCallback(connection);
+        }
+    }).on('error', err => {
+        console.error(err);
     });
-}).on('error', err => {
-    console.error(err);
-});
+};
 
-server.listen(9000, () => {
-    console.log('listen', server.address());
-});
+const start = port => {
+    server.listen(port, () => {
+        console.log('listen', server.address());
+    });
+};
+
+module.exports = {
+    connections, open, start
+};
