@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/ddoo-ddah/fbeye-processing-server/issues"
   },
-  "homepage": "https://github.com/ddoo-ddah/fbeye-processing-server#readme"
+  "homepage": "https://github.com/ddoo-ddah/fbeye-processing-server#readme",
+  "dependencies": {
+    "mongodb": "^3.6.0"
+  }
 }
