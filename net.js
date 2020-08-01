@@ -21,7 +21,7 @@ const Server = class {
             console.log(connection.address, `is connected. ${connection.id}`);
 
             socket.on('data', data => {
-                if (typeof onReceivedCallback == 'function') {
+                if (typeof onReceivedCallback === 'function') {
                     onReceivedCallback(connection, data);
                 }
             }).on('end', () => {
@@ -32,7 +32,7 @@ const Server = class {
                 this.connections.splice(this.connections.indexOf(connection), 1);
             });
 
-            if (typeof onConnectedCallback == 'function') {
+            if (typeof onConnectedCallback === 'function') {
                 onConnectedCallback(connection);
             }
         }).on('error', err => {
@@ -40,11 +40,11 @@ const Server = class {
         });
     }
 
-    start = port => {
+    start(port) {
         this.server.listen(port, () => {
             console.log('listen', this.server.address());
         });
-    };
+    }
 };
 
 module.exports = {
