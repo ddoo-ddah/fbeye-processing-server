@@ -8,5 +8,8 @@
         "mobile": {
             "port": 10101
         }
+    },
+    "db": {
+        "uri": "mongodb://localhost:27017/fbeye"
     }
 }
