@@ -1,17 +1,15 @@
 const tls = require('tls');
-const fs = require('fs');
-
-const options = {
-    key: fs.readFileSync('privkey.key'),
-    cert: fs.readFileSync('cert.crt')
-};
+const settings = require('./settings');
 
 const Server = class {
     constructor(onConnectedCallback, onReceivedCallback) {
         this.connections = [];
         let i = 0;
 
-        this.server = tls.createServer(options, socket => {
+        this.server = tls.createServer({
+            key: settings.settings.net.key,
+            cert: settings.settings.net.cert
+        }, socket => {
             const connection = {
                 id: i++,
                 socket,

@@ -1,5 +1,7 @@
 {
     "net": {
+        "key": "privkey.key",
+        "cert": "cert.crt",
         "desktop": {
             "port": 10100
         },
