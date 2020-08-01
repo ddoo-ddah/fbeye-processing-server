@@ -1,15 +1,11 @@
 const crypto = require('crypto');
-
-// 인증 코드의 길이 (Byte 단위)
-const size = 48;
-// 인증 코드 갱신 주기 (ms 단위)
-const interval = 30000;
+const settings = require('./settings');
 
 const authCodes = [];
 
 const update = () => {
     for (let i = 0; i < authCodes.length; i++) {
-        crypto.randomBytes(size, (err, buf) => {
+        crypto.randomBytes(settings.settings.auth.size, (err, buf) => {
             if (err) {
                 console.error(err);
             } else {
@@ -27,7 +23,7 @@ const verify = (exam, user, authCode, callback) => {
     }
 };
 
-setInterval(update, interval);
+setInterval(update, settings.settings.auth.interval);
 
 module.exports = {
     authCodes, update, verify
