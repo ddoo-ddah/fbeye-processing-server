@@ -1,0 +1,12 @@
+{
+    "net": {
+        "key": "privkey.key",
+        "cert": "cert.crt",
+        "desktop": {
+            "port": 10100
+        },
+        "mobile": {
+            "port": 10101
+        }
+    }
+}

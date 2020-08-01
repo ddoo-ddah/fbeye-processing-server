@@ -1,10 +1,8 @@
 const net = require('./net');
-
-// 포트 번호
-const port = 10101;
+const settings = require('./settings');
 
 const server = new net.Server(connection => {
 }, (connection, data) => {
 });
 
-server.start(port);
+server.start(settings.settings.net.mobile.port);
