@@ -1,12 +1,13 @@
 const mongodb = require('mongodb');
 const settings = require('./settings');
 
-const crud = callback => {
-    mongodb.MongoClient.connect(settings.settings.db.uri, (err, client) => {
-        if (err) {
-            console.error(err);
-        } else if (typeof callback === 'function') {
-            callback(client);
+const crud = async () => {
+    const mongoClient = await mongodb.MongoClient.connect(settings.settings.db.uri);
+    return new Promise((resolve, reject) => {
+        if (mongoClient) {
+            resolve(mongoClient);
+        } else {
+            reject(new Error('Could not connect to the database.'));
         }
     });
 };
