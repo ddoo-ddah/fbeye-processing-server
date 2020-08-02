@@ -15,14 +15,18 @@ const update = () => {
     }
 };
 
-const verify = (exam, user, authCode, callback) => {
-    const found = authCodes.find(e => e.authCode == authCode);
-    const result = (found !== undefined) && (found.exam === exam) && (found.user === user);
-    if (typeof callback === 'function') {
-        callback(exam, user, result);
-    }
+const verify = (exam, user, authCode) => {
+    return new Promise((resolve, reject) => {
+        if (exam && user && authCode && authCodes) {
+            const found = authCodes.find(e => e.authCode == authCode);
+            resolve((found !== undefined) && (found.exam === exam) && (found.user === user));
+        } else {
+            reject(new Error('Failed to verify the auth code.'));
+        }
+    });
 };
 
+update();
 setInterval(update, settings.settings.auth.interval);
 
 module.exports = {
