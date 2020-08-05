@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 const settings = require('./settings');
 
-const crud = async () => {
+async function crud() {
     const mongoClient = await mongodb.MongoClient.connect(settings.settings.db.uri);
     return new Promise((resolve, reject) => {
         if (mongoClient) {

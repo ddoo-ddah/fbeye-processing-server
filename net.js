@@ -1,7 +1,7 @@
 const tls = require('tls');
 const settings = require('./settings');
 
-const Server = class {
+class Server {
     constructor(onConnectedCallback, onReceivedCallback) {
         this.connections = [];
         let i = 0;
