@@ -11,5 +11,9 @@
     },
     "db": {
         "uri": "mongodb://localhost:27017/fbeye"
+    },
+    "auth": {
+        "size": 48,
+        "interval": 30000
     }
 }
