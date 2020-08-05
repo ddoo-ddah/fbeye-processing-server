@@ -1,7 +1,30 @@
 const crypto = require('crypto');
+const db = require('./db');
 const settings = require('./settings');
 
-const authCodes = [];
+let authCodes = [];
+
+async function load() {
+    const client = await db.crud();
+    const cursor = client.db().collection('exams').find();
+    const arr = [];
+    await cursor.forEach(doc => {
+        const exam = {
+            exam: doc.accessCode,
+            users: []
+        };
+        doc.users.forEach(e => {
+            exam.users.push({
+                user: e.accessCode,
+                authCode: null
+            });
+        });
+        arr.push(exam);
+    });
+    authCodes = arr;
+    await client.close();
+    update();
+}
 
 function update() {
     authCodes.forEach(e => {
@@ -28,9 +51,9 @@ function verify(exam, user, authCode) {
     });
 }
 
-update();
+load();
 setInterval(update, settings.settings.auth.interval);
 
 module.exports = {
-    authCodes, update, verify
+    authCodes, load, update, verify
 };
