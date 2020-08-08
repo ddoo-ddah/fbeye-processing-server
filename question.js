@@ -1,16 +1,18 @@
 const db = require('./db');
+const crypto = require('./crypto');
+const settings = require('./settings');
 
 const exams = [];
 
-async function loadQuestions(exam) {
+async function loadQuestions(examCode) {
     const client = await db.crud();
     const doc = await client.db().findOne({
-        accessCode: exam
+        accessCode: examCode
     });
     return new Promise((resolve, reject) => {
         if (doc) {
             resolve({
-                exam,
+                examCode,
                 questions: doc.questions
             });
         } else {
@@ -19,11 +21,29 @@ async function loadQuestions(exam) {
     });
 }
 
-async function getQuestions(exam) {
-    let found = exams.find(e => e.exam === exam);
+async function encryptQuestions(exam) {
+    const password = await crypto.randomBytes(settings.settings.crypto.length);
+    const encrypted = await crypto.encrypt(exam.questions, password);
+    return new Promise((resolve, reject) => {
+        if (encrypted) {
+            resolve({
+                examCode: exam.examCode,
+                questions: exam.questions,
+                password
+            });
+        } else {
+            reject(new Error('Failed to encrypt questions.'));
+        }
+    });
+}
+
+async function getQuestions(examCode) {
+    let found = exams.find(e => e.examCode === examCode);
     if (!found) {
-        found = await loadQuestions(exam);
-        exams.push(found);
+        const loaded = await loadQuestions(examCode);
+        const encrypted = await encryptQuestions(loaded);
+        exams.push(encrypted);
+        found = encrypted;
     }
     return new Promise((resolve, reject) => {
         if (found) {
