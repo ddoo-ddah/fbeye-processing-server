@@ -15,5 +15,9 @@
     "auth": {
         "size": 48,
         "interval": 30000
+    },
+    "crypto": {
+        "algorithm": "aes-256-cbc",
+        "length": 32
     }
 }

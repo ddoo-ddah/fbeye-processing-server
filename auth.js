@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require('./crypto');
 const db = require('./db');
 const settings = require('./settings');
 
@@ -26,16 +26,10 @@ async function load() {
     update();
 }
 
-function update() {
+async function update() {
     authCodes.forEach(e => {
         e.users.forEach(f => {
-            crypto.randomBytes(settings.settings.auth.size, (err, buf) => {
-                if (err) {
-                    console.error(err);
-                } else {
-                    f.authCode = buf;
-                }
-            });
+            f.authCode = await crypto.randomBytes(settings.settings.auth.size);
         });
     });
 }
