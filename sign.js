@@ -1,5 +1,7 @@
 const db = require('./db');
 
+const users = [];
+
 async function signIn(exam, user) {
     const client = await db.crud();
     const doc = await client.db().collection('exams').findOne({
@@ -18,6 +20,20 @@ async function signIn(exam, user) {
     });
 }
 
+function setDesktop(exam, user, connection) {
+    const found = users.find(e => e.exam === exam).users.find(e => e.user === user);
+    if (found) {
+        found.desktop = connection;
+    }
+}
+
+function setMobile(exam, user, connection) {
+    const found = users.find(e => e.exam === exam).users.find(e => e.user == user);
+    if (found) {
+        found.mobile = connection;
+    }
+}
+
 module.exports = {
-    signIn
+    signIn, setDesktop, setMobile
 };
