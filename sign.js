@@ -3,7 +3,7 @@ const db = require('./lib/db');
 const users = [];
 
 async function signIn(exam, user) {
-    const client = await db.crud();
+    const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
         accessCode: exam,
         users: {

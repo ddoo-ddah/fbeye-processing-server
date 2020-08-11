@@ -5,7 +5,7 @@ const settings = require('./settings');
 let authCodes = [];
 
 async function load() {
-    const client = await db.crud();
+    const client = await db.getClient();
     const cursor = client.db().collection('exams').find();
     const arr = [];
     await cursor.forEach(doc => {
