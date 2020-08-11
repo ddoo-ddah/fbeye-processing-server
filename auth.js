@@ -45,9 +45,20 @@ function verify(exam, user, authCode) {
     });
 }
 
+function getAuthCode(exam, user) {
+    const found = authCodes.find(e => e.exam === exam).users.find(e => e.user === user);
+    return new Promise((resolve, reject) => {
+        if (found) {
+            resolve(found.authCode);
+        } else {
+            reject(new Error('Failed to get the auth code.'));
+        }
+    });
+}
+
 load();
-setInterval(update, settings.settings.auth.interval);
+setInterval(load, settings.settings.auth.interval);
 
 module.exports = {
-    authCodes, load, update, verify
+    load, update, verify, getAuthCode
 };
