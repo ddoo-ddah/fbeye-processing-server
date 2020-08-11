@@ -1,5 +1,5 @@
-const db = require('./db');
-const crypto = require('./crypto');
+const db = require('./lib/db');
+const crypto = require('./lib/crypto');
 const settings = require('./settings');
 
 const exams = [];

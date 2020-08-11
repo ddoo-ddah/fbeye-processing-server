@@ -1,4 +1,4 @@
-const net = require('./net');
+const net = require('./lib/net');
 const settings = require('./settings');
 
 const server = new net.Server(connection => {
