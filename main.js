@@ -1,4 +1,4 @@
-const netDesktop = require('./net_desktop');
-const netMobile = require('./net_mobile');
+const desktop = require('./desktop');
+const mobile = require('./mobile');
 
 console.log('FBEye Processing Server');
