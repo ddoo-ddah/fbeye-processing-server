@@ -20,11 +20,43 @@ async function signIn(exam, user) {
     });
 }
 
+function signOut(exam, user) {
+    const found1 = users.find(e => e.exam === exam).users;
+    if (found1) {
+        const found2 = found1.find(e => e.user === user);
+        if (found2) {
+            found1.splice(found1.indexOf(found2), 1);
+        }
+    }
+}
+
+function getDesktop(exam, user) {
+    const found = users.find(e => e.exam === exam).users.find(e => e.user === user);
+    return new Promise((resolve, reject) => {
+        if (found) {
+            resolve(found.desktop);
+        } else {
+            reject(new Error('Failed to get user information.'));
+        }
+    });
+}
+
 function setDesktop(exam, user, connection) {
     const found = users.find(e => e.exam === exam).users.find(e => e.user === user);
     if (found) {
         found.desktop = connection;
     }
+}
+
+function getMobile(exam, user) {
+    const found = users.find(e => e.exam === exam).user.find(e => e.user === user);
+    return new Promise((resolve, reject) => {
+        if (found) {
+            resolve(found.mobile);
+        } else {
+            reject(new Error('Failed to get user information.'));
+        }
+    });
 }
 
 function setMobile(exam, user, connection) {
@@ -35,5 +67,5 @@ function setMobile(exam, user, connection) {
 }
 
 module.exports = {
-    signIn, setDesktop, setMobile
+    signIn, signOut, getDesktop, setDesktop, getMobile, setMobile
 };
