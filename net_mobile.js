@@ -1,8 +1,6 @@
 const net = require('./lib/net');
 const settings = require('./settings');
 
-const server = new net.Server(connection => {
-}, (connection, data) => {
-});
+const server = new net.Server();
 
-server.start(settings.settings.net.mobile.port);
+server.listen(settings.settings.net.mobile.port);
