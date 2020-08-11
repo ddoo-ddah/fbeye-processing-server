@@ -5,7 +5,7 @@ const settings = require('./settings');
 const exams = [];
 
 async function loadQuestions(examCode) {
-    const client = await db.crud();
+    const client = await db.getClient();
     const doc = await client.db().findOne({
         accessCode: examCode
     });
