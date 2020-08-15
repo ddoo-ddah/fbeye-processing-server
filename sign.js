@@ -1,4 +1,5 @@
 const db = require('./lib/db');
+const array = require('./lib/array');
 
 const users = [];
 
@@ -25,7 +26,7 @@ function signOut(exam, user) {
     if (found1) {
         const found2 = found1.find(e => e.user === user);
         if (found2) {
-            found1.splice(found1.indexOf(found2), 1);
+            array.remove(found1, found2);
         }
     }
 }
