@@ -22,8 +22,9 @@ const envelope = new Map();
 
 async function encryptQuestions(questions) {
     const password = await crypto.randomBytes(settings.settings.crypto.length);
-    const encrypted = await crypto.encrypt(JSON.stringify(questions), password, 'utf8');
-    envelope.set(encrypted, password);
+    const key = await crypto.createKey(password);
+    const encrypted = await crypto.encrypt(JSON.stringify(questions), key, 'utf8');
+    envelope.set(encrypted, key);
     return new Promise((resolve, reject) => {
         if (encrypted) {
             resolve(encrypted);
@@ -34,8 +35,8 @@ async function encryptQuestions(questions) {
 }
 
 async function decryptQuestions(encrypted) {
-    const password = envelope.get(encrypted);
-    const decrypted = await crypto.decrypt(encrypted, password, 'utf8');
+    const key = envelope.get(encrypted);
+    const decrypted = await crypto.decrypt(encrypted, key, 'utf8');
     const questions = JSON.parse(decrypted);
     return new Promise((resolve, reject) => {
         if (questions) {
