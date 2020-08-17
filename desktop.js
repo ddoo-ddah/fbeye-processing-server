@@ -1,6 +1,7 @@
 const net = require('./lib/net');
 const protocol = require('./protocol');
 const sign = require('./sign');
+const exam = require('./exam');
 const answer = require('./answer');
 const settings = require('./settings');
 
