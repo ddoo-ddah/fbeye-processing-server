@@ -7,14 +7,13 @@ async function getUserInformation(exam, user) {
         accessCode: exam
     });
     await client.close();
-    const found = doc.users.find(e => e.accessCode === user);
     const {
         email,
         accessCode,
         name
-    } = found;
+    } = doc.users.find(e => e.accessCode === user);
     return new Promise((resolve, reject) => {
-        if (found) {
+        if (doc) {
             resolve({
                 email,
                 accessCode,
@@ -31,15 +30,36 @@ const users = [];
 async function signIn(exam, user) {
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam,
-        users: {
-            accessCode: user
-        }
+        accessCode: exam
     });
     await client.close();
+    const {
+        email,
+        accessCode,
+        name
+    } = doc.users.find(e => e.accessCode === user);
+    const u = {
+        email,
+        accessCode,
+        name
+    };
+    const result = u.accessCode === user;
+    if (result) {
+        const found = users.find(e => e.accessCode === exam);
+        if (found) {
+            found.users.push(u);
+        } else {
+            users.push({
+                accessCode: exam,
+                users: [
+                    u
+                ]
+            });
+        }
+    }
     return new Promise((resolve, reject) => {
         if (doc) {
-            resolve((doc.accessCode === exam) && (doc.users.find(e => e.accessCode === user)));
+            resolve(result);
         } else {
             reject(new Error('Sign in failed.'));
         }
@@ -47,9 +67,9 @@ async function signIn(exam, user) {
 }
 
 function signOut(exam, user) {
-    const found1 = users.find(e => e.exam === exam).users;
+    const found1 = users.find(e => e.accessCode === exam).users;
     if (found1) {
-        const found2 = found1.find(e => e.user === user);
+        const found2 = found1.find(e => e.accessCode === user);
         if (found2) {
             array.remove(found1, found2);
         }
@@ -57,7 +77,7 @@ function signOut(exam, user) {
 }
 
 function getDesktop(exam, user) {
-    const found = users.find(e => e.exam === exam).users.find(e => e.user === user);
+    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
     return new Promise((resolve, reject) => {
         if (found) {
             resolve(found.desktop);
@@ -68,14 +88,14 @@ function getDesktop(exam, user) {
 }
 
 function setDesktop(exam, user, connection) {
-    const found = users.find(e => e.exam === exam).users.find(e => e.user === user);
+    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
     if (found) {
         found.desktop = connection;
     }
 }
 
 function getMobile(exam, user) {
-    const found = users.find(e => e.exam === exam).user.find(e => e.user === user);
+    const found = users.find(e => e.accessCode === exam).user.find(e => e.accessCode === user);
     return new Promise((resolve, reject) => {
         if (found) {
             resolve(found.mobile);
@@ -86,7 +106,7 @@ function getMobile(exam, user) {
 }
 
 function setMobile(exam, user, connection) {
-    const found = users.find(e => e.exam === exam).users.find(e => e.user == user);
+    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode == user);
     if (found) {
         found.mobile = connection;
     }
