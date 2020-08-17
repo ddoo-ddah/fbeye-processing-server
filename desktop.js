@@ -5,21 +5,26 @@ const user = require('./user');
 const settings = require('./settings');
 
 const server = new net.Server();
+const process = new Map();
 
-server.emitter.on('data', async (connection, data) => {
+server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    if (obj.type === 'sin') {
-        const result = await user.signIn(obj.data.exam, obj.data.user);
-        if (result) {
-            connection.socket.write(protocol.toBuffer({
-                type: 'res',
-                data: 'ok'
-            }));
-            user.setDesktop(obj.data.exam, obj.data.user, connection);
-        }
-    } else if (obj.type === 'ans') {
-        exam.submitAnswers(obj.data.exam, obj.data.user, obj.data.answers);
+    process.get(obj.type)(connection, obj.data);
+});
+
+process.set('sin', async (connection, data) => {
+    const result = await user.signIn(data.exam, data.user);
+    if (result) {
+        connection.socket.write(protocol.toBuffer({
+            type: 'res',
+            data: 'ok'
+        }));
+        user.setDesktop(data.exam, data.user, connection);
     }
+});
+
+process.set('ans', (connection, data) => {
+    exam.submitAnswers(data.exam, data.user, data.answers);
 });
 
 server.listen(settings.settings.net.desktop.port);

@@ -1,24 +1,28 @@
 const net = require('./lib/net');
 const protocol = require('./protocol');
+const user = require('./user');
 const settings = require('./settings');
 
 const server = new net.Server();
+const process = new Map();
 
-server.emitter.on('data', async (connection, data) => {
+server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    if (obj.type === 'aut') {
-        const result = await user.verifyAuthCode(obj.data.exam, obj.data.user, obj.authCode);
-        const desktop = await user.getDesktop(obj.data.exam, obj.data.user);
-        if (result) {
-            const mobile = await user.getMobile(obj.data.exam, obj.data.user);
-            if (connection === mobile) {
-                desktop.socket.write(protocol.toBuffer({
-                    type: 'res',
-                    data: 'authOk'
-                }));
-            } else if (!mobile) {
-                user.setMobile(obj.data.exam, obj.data.user, connection);
-            }
+    process.get(obj.type)(connection, obj.data);
+});
+
+process.set('aut', async (connection, data) => {
+    const result = await user.verifyAuthCode(data.exam, data.user, data.authCode);
+    if (result) {
+        const mobile = await user.getMobile(data.exam, data.user);
+        if (connection === mobile) {
+            const desktop = await user.getDesktop(data.exam, data.user);
+            desktop.socket.write(protocol.toBuffer({
+                type: 'res',
+                data: 'authOk'
+            }));
+        } else if (!mobile) {
+            user.setMobile(data.exam, data.user, connection);
         }
     }
 });
