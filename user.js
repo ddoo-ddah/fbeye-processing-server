@@ -1,5 +1,7 @@
 const db = require('./lib/db');
 const array = require('./lib/array');
+const crypto = require('./lib/crypto');
+const settings = require('./settings');
 
 async function getUserInformation(exam, user) {
     const client = await db.getClient();
@@ -56,6 +58,7 @@ async function signIn(exam, user) {
                 ]
             });
         }
+        updateAuthCode();
     }
     return new Promise((resolve, reject) => {
         if (doc) {
@@ -112,6 +115,38 @@ function setMobile(exam, user, connection) {
     }
 }
 
+function updateAuthCode() {
+    users.forEach(e => {
+        e.users.forEach(async f => {
+            f.authCode = await crypto.randomBytes(settings.settings.auth.size);
+        });
+    });
+}
+
+function verifyAuthCode(exam, user, authCode) {
+    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
+    return new Promise((resolve, reject) => {
+        if (found) {
+            resolve(found.authCode === authCode);
+        } else {
+            reject(new Error('Failed to verify the auth code.'));
+        }
+    });
+}
+
+function getAuthCode(exam, user) {
+    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
+    return new Promise((resolve, reject) => {
+        if (found) {
+            resolve(found.authCode);
+        } else {
+            reject(new Error('Failed to get the auth code.'));
+        }
+    });
+}
+
+setInterval(updateAuthCode, settings.settings.auth.interval);
+
 module.exports = {
-    getUserInformation, signIn, signOut, getDesktop, setDesktop, getMobile, setMobile
+    getUserInformation, signIn, signOut, getDesktop, setDesktop, getMobile, setMobile, updateAuthCode, verifyAuthCode, getAuthCode
 };

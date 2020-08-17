@@ -1,6 +1,5 @@
 const net = require('./lib/net');
 const protocol = require('./protocol');
-const auth = require('./auth');
 const settings = require('./settings');
 
 const server = new net.Server();
@@ -8,7 +7,7 @@ const server = new net.Server();
 server.emitter.on('data', async (connection, data) => {
     const obj = protocol.toObject(data);
     if (obj.type === 'aut') {
-        const result = await auth.verify(obj.data.exam, obj.data.user, obj.authCode);
+        const result = await user.verifyAuthCode(obj.data.exam, obj.data.user, obj.authCode);
         const desktop = await user.getDesktop(obj.data.exam, obj.data.user);
         if (result) {
             const mobile = await user.getMobile(obj.data.exam, obj.data.user);
