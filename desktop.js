@@ -3,7 +3,6 @@ const protocol = require('./protocol');
 const sign = require('./sign');
 const exam = require('./exam');
 const user = require('./user');
-const answer = require('./answer');
 const settings = require('./settings');
 
 const server = new net.Server();
@@ -20,7 +19,7 @@ server.emitter.on('data', async (connection, data) => {
             sign.setDesktop(obj.data.exam, obj.data.user, connection);
         }
     } else if (obj.type === 'ans') {
-        answer.submit(obj.data.exam, obj.data.user, obj.data.answers);
+        exam.submitAnswers(obj.data.exam, obj.data.user, obj.data.answers);
     }
 });
 
