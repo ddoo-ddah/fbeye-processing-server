@@ -84,16 +84,30 @@ async function getEncryptedQuestions(exam) {
     });
 }
 
-async function submitAnswers(exam, user, answers) {
+async function submitAnswers(exam, user, answers) { // 답변 제출
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+        accessCode: exam,
+        users: {
+            $elemMatch: {
+                accessCode: user
+            }
+        }
     });
     const found = doc.users.find(e => e.accessCode === user);
     found.answers = answers;
-    await client.db().collection('exams').replaceOne({
-        accessCode: exam
-    }, doc);
+    await client.db().collection('exams').updateOne({
+        accessCode: exam,
+        users: {
+            $elemMatch: {
+                accessCode: user
+            }
+        }
+    }, {
+        $set: {
+            users: doc.users
+        }
+    });
     await client.close();
 }
 
