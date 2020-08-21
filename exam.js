@@ -2,26 +2,21 @@ const db = require('./lib/db');
 const crypto = require('./lib/crypto');
 const settings = require('./settings');
 
-async function getExamInformation(exam) {
+async function getExamInformation(examCode) {
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+        accessCode: examCode
+    }, {
+        _id: false,
+        accessCode: true,
+        title: true,
+        startTime: true,
+        endTime: true
     });
     await client.close();
-    const {
-        accessCode,
-        title,
-        startTime,
-        endTime
-    } = doc;
     return new Promise((resolve, reject) => {
         if (doc) {
-            resolve({
-                accessCode,
-                title,
-                startTime,
-                endTime
-            });
+            resolve(doc);
         } else {
             reject(new Error('Failed to get exam information.'));
         }
