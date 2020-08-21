@@ -82,10 +82,10 @@ function setDesktop(examCode, userCode, connection) {
     }
 }
 
-function getMobile(exam, user) {
-    const found = users.find(e => e.accessCode === exam).user.find(e => e.accessCode === user);
+function getMobile(examCode, userCode) {
+    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
-        if (found) {
+        if (found && found.mobile) {
             resolve(found.mobile);
         } else {
             reject(new Error('Failed to get user information.'));
@@ -93,8 +93,8 @@ function getMobile(exam, user) {
     });
 }
 
-function setMobile(exam, user, connection) {
-    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode == user);
+function setMobile(examCode, userCode, connection) {
+    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     if (found) {
         found.mobile = connection;
     }
