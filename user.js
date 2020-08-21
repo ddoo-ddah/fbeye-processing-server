@@ -6,22 +6,18 @@ const settings = require('./settings');
 
 async function getUserInformation(exam, user) {
     const client = await db.getClient();
-    const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+    const doc = await client.db().collection('users').findOne({
+        accessCode: userCode
+    }, {
+        _id: false,
+        email: true,
+        name: true,
+        accessCode: true
     });
     await client.close();
-    const {
-        email,
-        accessCode,
-        name
-    } = doc.users.find(e => e.accessCode === user);
     return new Promise((resolve, reject) => {
         if (doc) {
-            resolve({
-                email,
-                accessCode,
-                name
-            });
+            resolve(doc);
         } else {
             reject(new Error('Failed to get user information.'));
         }
