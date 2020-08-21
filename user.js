@@ -120,7 +120,7 @@ function updateAuthCode() { // 인증 코드 갱신
 function verifyAuthCode(examCode, userCode, authCode) {
     const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
-        if (found) {
+        if (found && found.authCode) {
             resolve(authCode.compare(found.authCode) === 0);
         } else {
             reject(new Error('Failed to verify the auth code.'));
@@ -128,10 +128,10 @@ function verifyAuthCode(examCode, userCode, authCode) {
     });
 }
 
-function getAuthCode(exam, user) {
-    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
+function getAuthCode(examCode, userCode) {
+    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
-        if (found) {
+        if (found && found.authCode) {
             resolve(found.authCode);
         } else {
             reject(new Error('Failed to get the auth code.'));
