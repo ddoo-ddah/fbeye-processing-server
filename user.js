@@ -4,7 +4,7 @@ const crypto = require('./lib/crypto');
 const protocol = require('./protocol');
 const settings = require('./settings');
 
-async function getUserInformation(exam, user) {
+async function getUserInformation(userCode) {
     const client = await db.getClient();
     const doc = await client.db().collection('users').findOne({
         accessCode: userCode
