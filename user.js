@@ -100,21 +100,20 @@ function setMobile(examCode, userCode, connection) {
     }
 }
 
-function updateAuthCode() {
-    users.forEach(e => {
-        e.users.forEach(async f => {
-            f.authCode = await crypto.randomBytes(settings.settings.auth.size);
-            if (f.desktop) { // 갱신된 인증 코드 전송
-                f.desktop.socket.write(protocol.toBuffer({
-                    type: 'aut',
-                    data: {
-                        exam: e.accessCode,
-                        user: f.accessCode,
-                        authCode: f.accessCode
-                    }
-                }));
-            }
-        });
+function updateAuthCode() { // 인증 코드 갱신
+    users.forEach(async e => {
+        e.authCode = await crypto.randomBytes(settings.settings.auth.size);
+
+        if (e.desktop) { // 갱신된 인증 코드 전송
+            e.desktop.socket.write(protocol.toBuffer({
+                type: 'aut',
+                data: {
+                    examCode,
+                    userCode,
+                    authCode
+                } = e
+            }));
+        }
     });
 }
 
