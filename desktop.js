@@ -20,6 +20,17 @@ process.set('sin', async (connection, data) => {
             data: 'ok'
         }));
         user.setDesktop(data.exam, data.user, connection);
+
+        const examInfo = await exam.getExamInformation(data.exam);
+        connection.socket.write(protocol.toBuffer({
+            type: 'inf',
+            data: examInfo
+        }));
+        const userInfo = await user.getUserInformation(data.exam, data.user);
+        connection.socket.write(protocol.toBuffer({
+            type: 'usrinf',
+            data: userInfo
+        }));
     }
 });
 
