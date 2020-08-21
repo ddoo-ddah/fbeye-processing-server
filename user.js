@@ -59,14 +59,9 @@ async function signIn(examCode, userCode) {
     });
 }
 
-function signOut(exam, user) {
-    const found1 = users.find(e => e.accessCode === exam).users;
-    if (found1) {
-        const found2 = found1.find(e => e.accessCode === user);
-        if (found2) {
-            array.remove(found1, found2);
-        }
-    }
+function signOut(examCode, userCode) {
+    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
+    array.remove(users, found);
 }
 
 function getDesktop(exam, user) {
