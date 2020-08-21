@@ -2,41 +2,49 @@ const db = require('./lib/db');
 const crypto = require('./lib/crypto');
 const settings = require('./settings');
 
-async function getExamInformation(exam) {
+async function getExamInformation(examCode) {
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+        accessCode: examCode
+    }, {
+        _id: false,
+        accessCode: true,
+        title: true,
+        startTime: true,
+        endTime: true
     });
     await client.close();
-    const {
-        accessCode,
-        title,
-        startTime,
-        endTime
-    } = doc;
     return new Promise((resolve, reject) => {
         if (doc) {
-            resolve({
-                accessCode,
-                title,
-                startTime,
-                endTime
-            });
+            resolve(doc);
         } else {
             reject(new Error('Failed to get exam information.'));
         }
     });
 }
 
-async function getQuestions(exam) {
+async function getQuestions(examCode) {
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+        accessCode: examCode
+    }, {
+        _id: false,
+        questions: true
     });
     await client.close();
+
+    const questions = [];
+    doc.questions.forEach(e => { // 정답 제외
+        questions.push({
+            type,
+            question,
+            score
+        } = e);
+    });
+
     return new Promise((resolve, reject) => {
         if (doc) {
-            resolve(doc.questions);
+            resolve(questions);
         } else {
             reject(new Error('Failed to get questions.'));
         }
@@ -84,28 +92,19 @@ async function getEncryptedQuestions(exam) {
     });
 }
 
-async function submitAnswers(exam, user, answers) { // 답변 제출
+async function submitAnswers(examCode, userCode, answers) { // 답변 제출
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam,
-        users: {
-            $elemMatch: {
-                accessCode: user
-            }
-        }
+        accessCode: examCode
     });
-    const found = doc.users.find(e => e.accessCode === user);
-    found.answers = answers;
-    await client.db().collection('exams').updateOne({
-        accessCode: exam,
-        users: {
-            $elemMatch: {
-                accessCode: user
-            }
-        }
+    await client.db().collection('users').updateOne({
+        _id: {
+            $in: doc.users
+        },
+        accessCode: userCode
     }, {
         $set: {
-            users: doc.users
+            answers
         }
     });
     await client.close();
