@@ -64,10 +64,10 @@ function signOut(examCode, userCode) {
     array.remove(users, found);
 }
 
-function getDesktop(exam, user) {
-    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
+function getDesktop(examCode, userCode) {
+    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
-        if (found) {
+        if (found && found.desktop) {
             resolve(found.desktop);
         } else {
             reject(new Error('Failed to get user information.'));
@@ -75,8 +75,8 @@ function getDesktop(exam, user) {
     });
 }
 
-function setDesktop(exam, user, connection) {
-    const found = users.find(e => e.accessCode === exam).users.find(e => e.accessCode === user);
+function setDesktop(examCode, userCode, connection) {
+    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     if (found) {
         found.desktop = connection;
     }
