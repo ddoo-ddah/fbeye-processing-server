@@ -26,40 +26,33 @@ async function getUserInformation(exam, user) {
 
 const users = [];
 
-async function signIn(exam, user) {
+async function signIn(examCode, userCode) {
     const client = await db.getClient();
-    const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+    const doc1 = await client.db().collection('exams').findOne({
+        accessCode: examCode
+    });
+    const doc2 = await client.db().collection('users').findOne({
+        _id: {
+            $in: doc1.users
+        },
+        accessCode: userCode
+    }, {
+        _id: false,
+        email: true,
+        name: true
     });
     await client.close();
-    const {
-        email,
-        accessCode,
-        name
-    } = doc.users.find(e => e.accessCode === user);
-    const u = {
-        email,
-        accessCode,
-        name
-    };
-    const result = u.accessCode === user;
-    if (result) {
-        const found = users.find(e => e.accessCode === exam);
-        if (found) {
-            found.users.push(u);
-        } else {
-            users.push({
-                accessCode: exam,
-                users: [
-                    u
-                ]
-            });
-        }
+
+    if (doc2) {
+        doc2.examCode = examCode;
+        doc2.userCode = userCode;
+        users.push(doc2);
         updateAuthCode();
     }
+
     return new Promise((resolve, reject) => {
-        if (doc) {
-            resolve(result);
+        if (users.find(e => e.userCode === userCode)) {
+            resolve(doc1 && doc2);
         } else {
             reject(new Error('Sign in failed.'));
         }
