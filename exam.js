@@ -23,15 +23,28 @@ async function getExamInformation(examCode) {
     });
 }
 
-async function getQuestions(exam) {
+async function getQuestions(examCode) {
     const client = await db.getClient();
     const doc = await client.db().collection('exams').findOne({
-        accessCode: exam
+        accessCode: examCode
+    }, {
+        _id: false,
+        questions: true
     });
     await client.close();
+
+    const questions = [];
+    doc.questions.forEach(e => { // 정답 제외
+        questions.push({
+            type,
+            question,
+            score
+        } = e);
+    });
+
     return new Promise((resolve, reject) => {
         if (doc) {
-            resolve(doc.questions);
+            resolve(questions);
         } else {
             reject(new Error('Failed to get questions.'));
         }
