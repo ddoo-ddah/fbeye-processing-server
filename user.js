@@ -1,6 +1,7 @@
 const db = require('./lib/db');
 const array = require('./lib/array');
 const crypto = require('./lib/crypto');
+const protocol = require('./protocol');
 const settings = require('./settings');
 
 async function getUserInformation(exam, user) {
@@ -119,6 +120,16 @@ function updateAuthCode() {
     users.forEach(e => {
         e.users.forEach(async f => {
             f.authCode = await crypto.randomBytes(settings.settings.auth.size);
+            if (f.desktop) { // 갱신된 인증 코드 전송
+                f.desktop.socket.write(protocol.toBuffer({
+                    type: 'aut',
+                    data: {
+                        exam: e.accessCode,
+                        user: f.accessCode,
+                        authCode: f.accessCode
+                    }
+                }));
+            }
         });
     });
 }
