@@ -9,7 +9,10 @@ const process = new Map();
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    process.get(obj.type)(connection, obj.data);
+    const func = process.get(obj.type);
+    if (typeof func === 'function') {
+        func(connection, obj.data);
+    }
 });
 
 process.set('sin', async (connection, data) => {
@@ -26,7 +29,7 @@ process.set('sin', async (connection, data) => {
             type: 'inf',
             data: examInfo
         }));
-        const userInfo = await user.getUserInformation(data.exam, data.user);
+        const userInfo = await user.getUserInformation(data.user);
         connection.socket.write(protocol.toBuffer({
             type: 'usrinf',
             data: userInfo
