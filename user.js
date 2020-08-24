@@ -1,5 +1,4 @@
 const db = require('./lib/db');
-const array = require('./lib/array');
 const crypto = require('./lib/crypto');
 const protocol = require('./protocol');
 const settings = require('./settings');
@@ -61,7 +60,7 @@ function signIn(examCode, userCode) {
 
 function signOut(examCode, userCode) {
     const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-    array.remove(users, found);
+    users.remove(found);
 }
 
 function getDesktop(examCode, userCode) {
