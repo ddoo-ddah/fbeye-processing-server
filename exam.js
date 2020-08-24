@@ -34,13 +34,15 @@ function getQuestions(examCode) {
         });
         await client.close();
 
-        const questions = [];
         doc.questions.forEach(e => { // 정답 제외
-            questions.push({
-                type,
-                question,
-                score
-            } = e);
+            if (e.answers) { // 주관식
+                e.answers = undefined;
+            }
+            if (e.multipleChoices) { // 객관식
+                e.multipleChoices.forEach(f => {
+                    f.answers = undefined;
+                });
+            }
         });
 
         if (doc) {
