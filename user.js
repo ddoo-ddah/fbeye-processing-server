@@ -4,18 +4,18 @@ const crypto = require('./lib/crypto');
 const protocol = require('./protocol');
 const settings = require('./settings');
 
-async function getUserInformation(userCode) {
-    const client = await db.getClient();
-    const doc = await client.db().collection('users').findOne({
-        accessCode: userCode
-    }, {
-        _id: false,
-        email: true,
-        name: true,
-        accessCode: true
-    });
-    await client.close();
-    return new Promise((resolve, reject) => {
+function getUserInformation(userCode) {
+    return new Promise(async (resolve, reject) => {
+        const client = await db.connect();
+        const doc = await client.db().collection('users').findOne({
+            accessCode: userCode
+        }, {
+            _id: false,
+            email: true,
+            name: true,
+            accessCode: true
+        });
+        await client.close();
         if (doc) {
             resolve(doc);
         } else {
@@ -26,31 +26,31 @@ async function getUserInformation(userCode) {
 
 const users = [];
 
-async function signIn(examCode, userCode) {
-    const client = await db.getClient();
-    const doc1 = await client.db().collection('exams').findOne({
-        accessCode: examCode
-    });
-    const doc2 = await client.db().collection('users').findOne({
-        _id: {
-            $in: doc1.users
-        },
-        accessCode: userCode
-    }, {
-        _id: false,
-        email: true,
-        name: true
-    });
-    await client.close();
+function signIn(examCode, userCode) {
+    return new Promise(async (resolve, reject) => {
+        const client = await db.connect();
+        const doc1 = await client.db().collection('exams').findOne({
+            accessCode: examCode
+        });
+        const doc2 = await client.db().collection('users').findOne({
+            _id: {
+                $in: doc1.users
+            },
+            accessCode: userCode
+        }, {
+            _id: false,
+            email: true,
+            name: true
+        });
+        await client.close();
 
-    if (doc2) {
-        doc2.examCode = examCode;
-        doc2.userCode = userCode;
-        users.push(doc2);
-        updateAuthCode();
-    }
+        if (doc2) {
+            doc2.examCode = examCode;
+            doc2.userCode = userCode;
+            users.push(doc2);
+            updateAuthCode();
+        }
 
-    return new Promise((resolve, reject) => {
         if (users.find(e => e.userCode === userCode)) {
             resolve(doc1 && doc2);
         } else {
@@ -65,8 +65,8 @@ function signOut(examCode, userCode) {
 }
 
 function getDesktop(examCode, userCode) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
+        const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
         if (found && found.desktop) {
             resolve(found.desktop);
         } else {
@@ -83,8 +83,8 @@ function setDesktop(examCode, userCode, connection) {
 }
 
 function getMobile(examCode, userCode) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
+        const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
         if (found && found.mobile) {
             resolve(found.mobile);
         } else {
@@ -118,8 +118,8 @@ function updateAuthCode() { // 인증 코드 갱신
 }
 
 function verifyAuthCode(examCode, userCode, authCode) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
+        const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
         if (found && found.authCode) {
             resolve(authCode.compare(found.authCode) === 0);
         } else {
@@ -129,8 +129,8 @@ function verifyAuthCode(examCode, userCode, authCode) {
 }
 
 function getAuthCode(examCode, userCode) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
     return new Promise((resolve, reject) => {
+        const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
         if (found && found.authCode) {
             resolve(found.authCode);
         } else {

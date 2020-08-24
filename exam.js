@@ -2,19 +2,19 @@ const db = require('./lib/db');
 const crypto = require('./lib/crypto');
 const settings = require('./settings');
 
-async function getExamInformation(examCode) {
-    const client = await db.getClient();
-    const doc = await client.db().collection('exams').findOne({
-        accessCode: examCode
-    }, {
-        _id: false,
-        accessCode: true,
-        title: true,
-        startTime: true,
-        endTime: true
-    });
-    await client.close();
-    return new Promise((resolve, reject) => {
+function getExamInformation(examCode) {
+    return new Promise(async (resolve, reject) => {
+        const client = await db.connect();
+        const doc = await client.db().collection('exams').findOne({
+            accessCode: examCode
+        }, {
+            _id: false,
+            accessCode: true,
+            title: true,
+            startTime: true,
+            endTime: true
+        });
+        await client.close();
         if (doc) {
             resolve(doc);
         } else {
@@ -23,26 +23,26 @@ async function getExamInformation(examCode) {
     });
 }
 
-async function getQuestions(examCode) {
-    const client = await db.getClient();
-    const doc = await client.db().collection('exams').findOne({
-        accessCode: examCode
-    }, {
-        _id: false,
-        questions: true
-    });
-    await client.close();
+function getQuestions(examCode) {
+    return new Promise(async (resolve, reject) => {
+        const client = await db.connect();
+        const doc = await client.db().collection('exams').findOne({
+            accessCode: examCode
+        }, {
+            _id: false,
+            questions: true
+        });
+        await client.close();
 
-    const questions = [];
-    doc.questions.forEach(e => { // 정답 제외
-        questions.push({
-            type,
-            question,
-            score
-        } = e);
-    });
+        const questions = [];
+        doc.questions.forEach(e => { // 정답 제외
+            questions.push({
+                type,
+                question,
+                score
+            } = e);
+        });
 
-    return new Promise((resolve, reject) => {
         if (doc) {
             resolve(questions);
         } else {
@@ -53,12 +53,12 @@ async function getQuestions(examCode) {
 
 const envelope = new Map();
 
-async function encryptQuestions(questions) {
-    const password = await crypto.randomBytes(settings.settings.crypto.length);
-    const key = await crypto.createKey(password);
-    const encrypted = await crypto.encrypt(JSON.stringify(questions), key, 'utf8');
-    envelope.set(encrypted, key);
-    return new Promise((resolve, reject) => {
+function encryptQuestions(questions) {
+    return new Promise(async (resolve, reject) => {
+        const password = await crypto.randomBytes(settings.settings.crypto.length);
+        const key = await crypto.createKey(password);
+        const encrypted = await crypto.encrypt(JSON.stringify(questions), key, 'utf8');
+        envelope.set(encrypted, key);
         if (encrypted) {
             resolve(encrypted);
         } else {
@@ -67,11 +67,11 @@ async function encryptQuestions(questions) {
     });
 }
 
-async function decryptQuestions(encrypted) {
-    const key = envelope.get(encrypted);
-    const decrypted = await crypto.decrypt(encrypted, key, 'utf8');
-    const questions = JSON.parse(decrypted);
-    return new Promise((resolve, reject) => {
+function decryptQuestions(encrypted) {
+    return new Promise(async (resolve, reject) => {
+        const key = envelope.get(encrypted);
+        const decrypted = await crypto.decrypt(encrypted, key, 'utf8');
+        const questions = JSON.parse(decrypted);
         if (questions) {
             resolve(questions);
         } else {
@@ -80,10 +80,10 @@ async function decryptQuestions(encrypted) {
     });
 }
 
-async function getEncryptedQuestions(exam) {
-    const questions = await getQuestions(exam);
-    const encrypted = await encryptQuestions(questions);
-    return new Promise((resolve, reject) => {
+function getEncryptedQuestions(exam) {
+    return new Promise(async (resolve, reject) => {
+        const questions = await getQuestions(exam);
+        const encrypted = await encryptQuestions(questions);
         if (encrypted) {
             resolve(encrypted);
         } else {
@@ -93,7 +93,7 @@ async function getEncryptedQuestions(exam) {
 }
 
 async function submitAnswers(examCode, userCode, answers) { // 답변 제출
-    const client = await db.getClient();
+    const client = await db.connect();
     const doc = await client.db().collection('exams').findOne({
         accessCode: examCode
     });
