@@ -11,14 +11,14 @@ server.emitter.on('data', (connection, data) => {
     process.get(obj.type)(connection, obj.data);
 });
 
-process.set('aut', async (connection, data) => {
+process.set('AUT', async (connection, data) => {
     const result = await user.verifyAuthCode(data.exam, data.user, data.authCode);
     if (result) {
         const mobile = await user.getMobile(data.exam, data.user);
         if (connection === mobile) {
             const desktop = await user.getDesktop(data.exam, data.user);
             desktop.socket.write(protocol.toBuffer({
-                type: 'res',
+                type: 'RES',
                 data: 'authOk'
             }));
         } else if (!mobile) {

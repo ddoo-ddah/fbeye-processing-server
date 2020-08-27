@@ -105,7 +105,7 @@ function updateAuthCode() { // 인증 코드 갱신
 
         if (e.desktop) { // 갱신된 인증 코드 전송
             e.desktop.socket.write(protocol.toBuffer({
-                type: 'aut',
+                type: 'AUT',
                 data: {
                     examCode,
                     userCode,

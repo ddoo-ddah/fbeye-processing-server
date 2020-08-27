@@ -15,29 +15,29 @@ server.emitter.on('data', (connection, data) => {
     }
 });
 
-process.set('sin', async (connection, data) => {
+process.set('SIN', async (connection, data) => {
     const result = await user.signIn(data.exam, data.user);
     if (result) {
         connection.socket.write(protocol.toBuffer({
-            type: 'res',
+            type: 'RES',
             data: 'ok'
         }));
         user.setDesktop(data.exam, data.user, connection);
 
         const examInfo = await exam.getExamInformation(data.exam);
         connection.socket.write(protocol.toBuffer({
-            type: 'inf',
+            type: 'INF',
             data: examInfo
         }));
         const userInfo = await user.getUserInformation(data.user);
         connection.socket.write(protocol.toBuffer({
-            type: 'usrinf',
+            type: 'USRINF',
             data: userInfo
         }));
     }
 });
 
-process.set('ans', (connection, data) => {
+process.set('ANS', (connection, data) => {
     exam.submitAnswers(data.exam, data.user, data.answers);
 });
 

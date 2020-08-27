@@ -3,9 +3,7 @@ function toBuffer(obj) {
 }
 
 function toObject(buf) {
-    const obj = JSON.parse(buf.toString());
-    obj.type = obj.type.toLowerCase();
-    return obj;
+    return JSON.parse(buf.toString());
 }
 
 module.exports = {
