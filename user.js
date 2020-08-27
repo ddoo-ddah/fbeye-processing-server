@@ -9,10 +9,12 @@ function getUserInformation(userCode) {
         const doc = await client.db().collection('users').findOne({
             accessCode: userCode
         }, {
-            _id: false,
-            email: true,
-            name: true,
-            accessCode: true
+            projection: {
+                _id: false,
+                email: true,
+                name: true,
+                accessCode: true
+            }
         });
         await client.close();
         if (doc) {
@@ -37,9 +39,11 @@ function signIn(examCode, userCode) {
             },
             accessCode: userCode
         }, {
-            _id: false,
-            email: true,
-            name: true
+            projection: {
+                _id: false,
+                email: true,
+                name: true
+            }
         });
         await client.close();
 

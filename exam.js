@@ -8,11 +8,13 @@ function getExamInformation(examCode) {
         const doc = await client.db().collection('exams').findOne({
             accessCode: examCode
         }, {
-            _id: false,
-            accessCode: true,
-            title: true,
-            startTime: true,
-            endTime: true
+            projection: {
+                _id: false,
+                accessCode: true,
+                title: true,
+                startTime: true,
+                endTime: true
+            }
         });
         await client.close();
         if (doc) {
@@ -29,8 +31,10 @@ function getQuestions(examCode) {
         const doc = await client.db().collection('exams').findOne({
             accessCode: examCode
         }, {
-            _id: false,
-            questions: true
+            projection: {
+                _id: false,
+                questions: true
+            }
         });
         await client.close();
 
