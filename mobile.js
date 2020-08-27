@@ -17,7 +17,7 @@ process.set('AUT', async (connection, data) => {
         const mobile = await user.getMobile(data.exam, data.user);
         if (connection === mobile) {
             const desktop = await user.getDesktop(data.exam, data.user);
-            desktop.socket.write(protocol.toBuffer({
+            desktop.write(protocol.toBuffer({
                 type: 'RES',
                 data: 'authOk'
             }));

@@ -104,7 +104,7 @@ function updateAuthCode() { // 인증 코드 갱신
         e.authCode = await crypto.randomBytes(settings.settings.auth.size);
 
         if (e.desktop) { // 갱신된 인증 코드 전송
-            e.desktop.socket.write(protocol.toBuffer({
+            e.desktop.write(protocol.toBuffer({
                 type: 'AUT',
                 data: {
                     examCode,
