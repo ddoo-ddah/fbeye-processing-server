@@ -67,6 +67,28 @@ function signOut(userCode) {
     users.remove(found);
 }
 
+function getUserCodeFromDesktop(desktop) {
+    return new Promise((resolve, reject) => {
+        const found = users.find(e => e.desktop === desktop);
+        if (found && found.userCode) {
+            resolve(found.userCode);
+        } else {
+            reject(new Error('Failed to get user information.'));
+        }
+    });
+}
+
+function getUserCodeFromMobile(mobile) {
+    return new Promise((resolve, reject) => {
+        const found = users.find(e => e.mobile === mobile);
+        if (found && found.userCode) {
+            resolve(found.userCode);
+        } else {
+            reject(new Error('Failed to get user information.'));
+        }
+    });
+}
+
 function getDesktop(examCode, userCode) {
     return new Promise((resolve, reject) => {
         const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
@@ -145,5 +167,5 @@ function getAuthCode(examCode, userCode) {
 setInterval(updateAuthCode, settings.settings.auth.interval);
 
 module.exports = {
-    getUserInformation, signIn, signOut, getDesktop, setDesktop, getMobile, setMobile, updateAuthCode, verifyAuthCode, getAuthCode
+    getUserInformation, signIn, signOut, getUserCodeFromDesktop, getUserCodeFromMobile, getDesktop, setDesktop, getMobile, setMobile, updateAuthCode, verifyAuthCode, getAuthCode
 };
