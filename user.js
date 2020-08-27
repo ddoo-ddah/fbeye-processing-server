@@ -62,8 +62,8 @@ function signIn(examCode, userCode) {
     });
 }
 
-function signOut(examCode, userCode) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
+function signOut(userCode) {
+    const found = users.find(e => e.userCode === userCode);
     users.remove(found);
 }
 
