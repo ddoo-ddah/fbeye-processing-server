@@ -8,7 +8,10 @@ const process = new Map();
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    process.get(obj.type)(connection, obj.data);
+    const func = process.get(obj.type);;
+    if (typeof func === 'function') {
+        func(connection, obj.data)
+    }
 });
 
 process.set('AUT', async (connection, data) => {
