@@ -15,17 +15,17 @@ server.emitter.on('data', (connection, data) => {
 });
 
 process.set('AUT', async (connection, data) => {
-    const result = await user.verifyAuthCode(data.exam, data.user, data.authCode);
+    const result = await user.verifyAuthCode(data.examCode, data.userCode, data.authCode);
     if (result) {
-        const mobile = await user.getMobile(data.exam, data.user);
+        const mobile = await user.getMobile(data.examCode, data.userCode);
         if (connection === mobile) {
-            const desktop = await user.getDesktop(data.exam, data.user);
+            const desktop = await user.getDesktop(data.examCode, data.userCode);
             desktop.write(protocol.toBuffer({
                 type: 'RES',
                 data: 'authOk'
             }));
         } else if (!mobile) {
-            user.setMobile(data.exam, data.user, connection);
+            user.setMobile(data.examCode, data.userCode, connection);
         }
     }
 });

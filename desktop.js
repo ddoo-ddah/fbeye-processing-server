@@ -16,20 +16,20 @@ server.emitter.on('data', (connection, data) => {
 });
 
 process.set('SIN', async (connection, data) => {
-    const result = await user.signIn(data.exam, data.user);
+    const result = await user.signIn(data.examCode, data.userCode);
     if (result) {
         connection.write(protocol.toBuffer({
             type: 'RES',
             data: 'ok'
         }));
-        user.setDesktop(data.exam, data.user, connection);
+        user.setDesktop(data.examCode, data.userCode, connection);
 
-        const examInfo = await exam.getExamInformation(data.exam);
+        const examInfo = await exam.getExamInformation(data.examCode);
         connection.write(protocol.toBuffer({
             type: 'INF',
             data: examInfo
         }));
-        const userInfo = await user.getUserInformation(data.user);
+        const userInfo = await user.getUserInformation(data.userCode);
         connection.write(protocol.toBuffer({
             type: 'USRINF',
             data: userInfo
@@ -38,7 +38,7 @@ process.set('SIN', async (connection, data) => {
 });
 
 process.set('ANS', (connection, data) => {
-    exam.submitAnswers(data.exam, data.user, data.answers);
+    exam.submitAnswers(data.examCode, data.userCode, data.answers);
 });
 
 server.emitter.on('close', async (connection, hadError) => {
