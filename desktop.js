@@ -41,4 +41,9 @@ process.set('ANS', (connection, data) => {
     exam.submitAnswers(data.exam, data.user, data.answers);
 });
 
+server.emitter.on('close', async (connection, hadError) => {
+    const userCode = await user.getUserCodeFromDesktop(connection);
+    user.signOut(userCode);
+});
+
 server.listen(settings.settings.net.desktop.port);
