@@ -107,10 +107,10 @@ function updateAuthCode() { // 인증 코드 갱신
             e.desktop.write(protocol.toBuffer({
                 type: 'AUT',
                 data: {
-                    examCode,
-                    userCode,
-                    authCode
-                } = e
+                    examCode: e.examCode,
+                    userCode: e.userCode,
+                    authCode: e.authCode
+                }
             }));
         }
     });
