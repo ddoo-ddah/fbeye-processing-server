@@ -13,10 +13,17 @@ function getExamInformation(examCode) {
                 accessCode: true,
                 title: true,
                 startTime: true,
-                endTime: true
+                endTime: true,
+                questions: true
             }
         });
         await client.close();
+
+        doc.count = doc.questions ? doc.questions.length : 0; // 문제 수
+        if (doc.questions) {
+            doc.questions = undefined;
+        }
+
         if (doc) {
             resolve(doc);
         } else {
