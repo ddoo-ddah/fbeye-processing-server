@@ -24,15 +24,21 @@ process.set('SIN', async (connection, data) => {
         }));
         user.setDesktop(data.examCode, data.userCode, connection);
 
-        const examInfo = await exam.getExamInformation(data.examCode);
+        const examInfo = await exam.getExamInformation(data.examCode); // 시험 정보
         connection.write(protocol.toBuffer({
             type: 'INF',
             data: examInfo
         }));
-        const userInfo = await user.getUserInformation(data.userCode);
+        const userInfo = await user.getUserInformation(data.userCode); // 응시자 정보
         connection.write(protocol.toBuffer({
             type: 'USRINF',
             data: userInfo
+        }));
+
+        const questions = await exam.encryptQuestions(await exam.getQuestions(data.examCode)); // 시험 문제
+        connection.write(protocol.toBuffer({
+            type: 'QUE',
+            data: questions
         }));
     }
 });
