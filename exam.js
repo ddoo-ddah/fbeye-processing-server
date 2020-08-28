@@ -68,7 +68,7 @@ const envelope = new Map();
 
 function encryptQuestions(questions) {
     return new Promise(async (resolve, reject) => {
-        const password = await crypto.randomBytes(settings.settings.crypto.length);
+        const password = await crypto.randomBytes(settings.crypto.length);
         const key = await crypto.createKey(password);
         const encrypted = await crypto.encrypt(JSON.stringify(questions), key, 'utf8');
         envelope.set(encrypted, key);

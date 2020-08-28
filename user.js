@@ -127,7 +127,7 @@ function setMobile(examCode, userCode, connection) {
 
 function updateAuthCode() { // 인증 코드 갱신
     users.forEach(async e => {
-        e.authCode = (await crypto.randomBytes(settings.settings.auth.size)).toString('base64');
+        e.authCode = (await crypto.randomBytes(settings.auth.size)).toString('base64');
 
         if (e.desktop) { // 갱신된 인증 코드 전송
             e.desktop.write(protocol.toBuffer({
@@ -164,7 +164,7 @@ function getAuthCode(examCode, userCode) {
     });
 }
 
-setInterval(updateAuthCode, settings.settings.auth.interval);
+setInterval(updateAuthCode, settings.auth.interval);
 
 module.exports = {
     getUserInformation, signIn, signOut, getUserCodeFromDesktop, getUserCodeFromMobile, getDesktop, setDesktop, getMobile, setMobile, updateAuthCode, verifyAuthCode, getAuthCode

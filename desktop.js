@@ -46,4 +46,4 @@ server.emitter.on('close', async (connection, hadError) => {
     user.signOut(userCode);
 });
 
-server.listen(settings.settings.net.desktop.port);
+server.listen(settings.net.desktop.port);

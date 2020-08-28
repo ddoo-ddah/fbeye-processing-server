@@ -30,4 +30,4 @@ process.set('AUT', async (connection, data) => {
     }
 });
 
-server.listen(settings.settings.net.mobile.port);
+server.listen(settings.net.mobile.port);
