@@ -10,22 +10,49 @@ server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
     const func = process.get(obj.type);;
     if (typeof func === 'function') {
-        func(connection, obj.data)
+        func(connection, obj.data);
     }
 });
 
 process.set('AUT', async (connection, data) => {
     const result = await user.verifyAuthCode(data.examCode, data.userCode, data.authCode);
+    const desktop = await user.getDesktop(data.examCode, data.userCode);
+    const mobile = await user.getMobile(data.examCode, data.userCode);
     if (result) {
-        const mobile = await user.getMobile(data.examCode, data.userCode);
+        const authOk = protocol.toBuffer({
+            type: 'RES',
+            data: 'authOk'
+        });
         if (connection === mobile) {
-            const desktop = await user.getDesktop(data.examCode, data.userCode);
-            desktop.write(protocol.toBuffer({
-                type: 'RES',
-                data: 'authOk'
-            }));
+            if (desktop) {
+                desktop.write(authOk);
+            }
+            if (mobile) {
+                mobile.write(authOk);
+            }
         } else if (!mobile) {
             user.setMobile(data.examCode, data.userCode, connection);
+            if (desktop) {
+                desktop.write(protocol.toBuffer({
+                    type: 'RES',
+                    data: 'mobileOk'
+                }));
+                connection.write(protocol.toBuffer({
+                    type: 'RES',
+                    data: 'desktopOk'
+                }));
+            }
+        }
+    } else {
+        const authFailed = protocol.toBuffer({
+            type: 'RES',
+            data: 'authFailed'
+        });
+        if (desktop) {
+            desktop.write(authFailed);
+        }
+        if (mobile) {
+            mobile.write(authFailed);
         }
     }
 });
