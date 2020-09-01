@@ -34,7 +34,8 @@ process.set('SIN', async (connection, data) => {
             type: 'RES',
             data: 'ok'
         }));
-        user.setDesktop(data.examCode, data.userCode, connection);
+        const u = await user.getUserByCode(data.userCode);
+        u.desktop = connection;
 
         const examInfo = await exam.getExamInformation(data.examCode); // 시험 정보
         connection.write(protocol.toBuffer({
