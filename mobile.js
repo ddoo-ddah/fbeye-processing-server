@@ -58,4 +58,14 @@ process.set('AUT', async (connection, data) => {
     }
 });
 
+process.set('EYE', async (connection, data) => {
+    const u = await user.getUserByMobile(connection);
+    if (u.desktop) {
+        u.desktop.write(protocol.toBuffer({
+            type: 'EYE',
+            data
+        }));
+    }
+});
+
 server.listen(settings.net.mobile.port);
