@@ -17,6 +17,16 @@ server.emitter.on('data', (connection, data) => {
     }
 });
 
+process.set('REQ', async (connection, data) => {
+    const u = await user.getUserByDesktop(connection);
+    if (u.mobile) {
+        u.mobile.write(protocol.toBuffer({
+            type: 'REQ',
+            data
+        }));
+    }
+});
+
 process.set('SIN', async (connection, data) => {
     const result = await user.signIn(data.examCode, data.userCode);
     if (result) {
