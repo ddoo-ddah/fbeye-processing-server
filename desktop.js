@@ -7,6 +7,8 @@ const settings = require('./settings');
 const server = new net.Server();
 const process = new Map();
 
+server.name = 'desktop';
+
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
     const func = process.get(obj.type);
