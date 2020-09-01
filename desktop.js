@@ -50,8 +50,8 @@ process.set('ANS', (connection, data) => {
 });
 
 server.emitter.on('close', async (connection, hadError) => {
-    const userCode = await user.getUserCodeFromDesktop(connection);
-    user.signOut(userCode);
+    const u = await user.getUserByDesktop(connection);
+    user.signOut(u.userCode);
 });
 
 server.listen(settings.net.desktop.port);

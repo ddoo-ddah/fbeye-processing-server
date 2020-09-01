@@ -67,62 +67,37 @@ function signOut(userCode) {
     users.remove(found);
 }
 
-function getUserCodeFromDesktop(desktop) {
+function getUserByCode(userCode) {
+    return new Promise((resolve, reject) => {
+        const found = users.find(e => e.userCode === userCode);
+        if (found) {
+            resolve(found);
+        } else {
+            reject(new Error('Failed to get user by code.'));
+        }
+    });
+}
+
+function getUserByDesktop(desktop) {
     return new Promise((resolve, reject) => {
         const found = users.find(e => e.desktop === desktop);
-        if (found && found.userCode) {
-            resolve(found.userCode);
+        if (found) {
+            resolve(found);
         } else {
-            reject(new Error('Failed to get user information.'));
+            reject(new Error('Failed to get user by desktop.'));
         }
     });
 }
 
-function getUserCodeFromMobile(mobile) {
+function getUserByMobile(mobile) {
     return new Promise((resolve, reject) => {
         const found = users.find(e => e.mobile === mobile);
-        if (found && found.userCode) {
-            resolve(found.userCode);
+        if (found) {
+            resolve(found);
         } else {
-            reject(new Error('Failed to get user information.'));
+            reject(new Error('Failed to get user by mobile.'));
         }
     });
-}
-
-function getDesktop(examCode, userCode) {
-    return new Promise((resolve, reject) => {
-        const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-        if (found && found.desktop) {
-            resolve(found.desktop);
-        } else {
-            reject(new Error('Failed to get user information.'));
-        }
-    });
-}
-
-function setDesktop(examCode, userCode, connection) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-    if (found) {
-        found.desktop = connection;
-    }
-}
-
-function getMobile(examCode, userCode) {
-    return new Promise((resolve, reject) => {
-        const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-        if (found && found.mobile) {
-            resolve(found.mobile);
-        } else {
-            reject(new Error('Failed to get user information.'));
-        }
-    });
-}
-
-function setMobile(examCode, userCode, connection) {
-    const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-    if (found) {
-        found.mobile = connection;
-    }
 }
 
 function updateAuthCode() { // 인증 코드 갱신
@@ -167,5 +142,5 @@ function getAuthCode(examCode, userCode) {
 setInterval(updateAuthCode, settings.auth.interval);
 
 module.exports = {
-    getUserInformation, signIn, signOut, getUserCodeFromDesktop, getUserCodeFromMobile, getDesktop, setDesktop, getMobile, setMobile, updateAuthCode, verifyAuthCode, getAuthCode
+    getUserInformation, signIn, signOut, getUserByCode, getUserByDesktop, getUserByMobile, updateAuthCode, verifyAuthCode, getAuthCode
 };

@@ -18,24 +18,23 @@ server.emitter.on('data', (connection, data) => {
 
 process.set('AUT', async (connection, data) => {
     const result = await user.verifyAuthCode(data.examCode, data.userCode, data.authCode);
-    const desktop = await user.getDesktop(data.examCode, data.userCode);
-    const mobile = await user.getMobile(data.examCode, data.userCode);
+    const u = await user.getUserByCode(data.userCode);
     if (result) {
         const authOk = protocol.toBuffer({
             type: 'RES',
             data: 'authOk'
         });
-        if (connection === mobile) {
-            if (desktop) {
+        if (connection === u.mobile) {
+            if (u.desktop) {
                 desktop.write(authOk);
             }
-            if (mobile) {
+            if (u.mobile) {
                 mobile.write(authOk);
             }
-        } else if (!mobile) {
-            user.setMobile(data.examCode, data.userCode, connection);
-            if (desktop) {
-                desktop.write(protocol.toBuffer({
+        } else if (!u.mobile) {
+            u.mobile = connection;
+            if (u.desktop) {
+                u.desktop.write(protocol.toBuffer({
                     type: 'RES',
                     data: 'mobileOk'
                 }));
@@ -50,10 +49,10 @@ process.set('AUT', async (connection, data) => {
             type: 'RES',
             data: 'authFailed'
         });
-        if (desktop) {
+        if (u.desktop) {
             desktop.write(authFailed);
         }
-        if (mobile) {
+        if (u.mobile) {
             mobile.write(authFailed);
         }
     }
