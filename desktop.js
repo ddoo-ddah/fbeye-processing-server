@@ -30,10 +30,7 @@ process.set('REQ', async (connection, data) => {
 process.set('SIN', async (connection, data) => {
     const result = await user.signIn(data.examCode, data.userCode);
     if (result) {
-        connection.write(protocol.toBuffer({
-            type: 'RES',
-            data: 'ok'
-        }));
+        connection.write(protocol.toBuffer(protocol.ok));
         const u = await user.getUserByCode(data.userCode);
         u.desktop = connection;
 

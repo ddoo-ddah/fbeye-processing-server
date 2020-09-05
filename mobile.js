@@ -20,10 +20,7 @@ process.set('AUT', async (connection, data) => {
     const result = await user.verifyAuthCode(data.examCode, data.userCode, data.authCode);
     const u = await user.getUserByCode(data.userCode);
     if (result) {
-        const authOk = protocol.toBuffer({
-            type: 'RES',
-            data: 'authOk'
-        });
+        const authOk = protocol.toBuffer(protocol.authOk);
         if (connection === u.mobile) {
             if (u.desktop) {
                 u.desktop.write(authOk);
@@ -34,21 +31,12 @@ process.set('AUT', async (connection, data) => {
         } else if (!u.mobile) {
             u.mobile = connection;
             if (u.desktop) {
-                u.desktop.write(protocol.toBuffer({
-                    type: 'RES',
-                    data: 'mobileOk'
-                }));
-                connection.write(protocol.toBuffer({
-                    type: 'RES',
-                    data: 'desktopOk'
-                }));
+                u.desktop.write(protocol.toBuffer(protocol.mobileOk));
+                connection.write(protocol.toBuffer(protocol.desktopOk));
             }
         }
     } else {
-        const authFailed = protocol.toBuffer({
-            type: 'RES',
-            data: 'authFailed'
-        });
+        const authFailed = protocol.toBuffer(protocol.authFailed);
         if (u.desktop) {
             u.desktop.write(authFailed);
         }
