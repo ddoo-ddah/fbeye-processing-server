@@ -26,10 +26,10 @@ process.set('AUT', async (connection, data) => {
         });
         if (connection === u.mobile) {
             if (u.desktop) {
-                desktop.write(authOk);
+                u.desktop.write(authOk);
             }
             if (u.mobile) {
-                mobile.write(authOk);
+                u.mobile.write(authOk);
             }
         } else if (!u.mobile) {
             u.mobile = connection;
@@ -50,10 +50,10 @@ process.set('AUT', async (connection, data) => {
             data: 'authFailed'
         });
         if (u.desktop) {
-            desktop.write(authFailed);
+            u.desktop.write(authFailed);
         }
         if (u.mobile) {
-            mobile.write(authFailed);
+            u.mobile.write(authFailed);
         }
     }
 });
