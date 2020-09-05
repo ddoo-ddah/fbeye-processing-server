@@ -45,7 +45,7 @@ process.set('SIN', async (connection, data) => {
             data: userInfo
         }));
 
-        const questions = await exam.encryptQuestions(await exam.getQuestions(data.examCode)); // 시험 문제
+        const questions = await exam.encryptQuestions(await exam.getQuestions(data.examCode), data.userCode); // 시험 문제
         connection.write(protocol.toBuffer({
             type: 'QUE',
             data: questions

@@ -66,12 +66,13 @@ function getQuestions(examCode) {
 
 const envelope = new Map();
 
-function encryptQuestions(questions) {
+function encryptQuestions(questions, userCode) {
     return new Promise(async (resolve, reject) => {
         const password = await crypto.randomBytes(settings.crypto.length);
         const key = await crypto.createKey(password);
         const encrypted = await crypto.encrypt(JSON.stringify(questions), key, 'utf8');
-        envelope.set(encrypted, key);
+        envelope.set(userCode, key);
+
         if (encrypted) {
             resolve(encrypted);
         } else {
@@ -80,27 +81,16 @@ function encryptQuestions(questions) {
     });
 }
 
-function decryptQuestions(encrypted) {
+function decryptQuestions(encrypted, userCode) {
     return new Promise(async (resolve, reject) => {
-        const key = envelope.get(encrypted);
+        const key = envelope.get(userCode);
         const decrypted = await crypto.decrypt(encrypted, key, 'utf8');
         const questions = JSON.parse(decrypted);
+
         if (questions) {
             resolve(questions);
         } else {
             reject(new Error('Failed to decrypt questions.'));
-        }
-    });
-}
-
-function getEncryptedQuestions(exam) {
-    return new Promise(async (resolve, reject) => {
-        const questions = await getQuestions(exam);
-        const encrypted = await encryptQuestions(questions);
-        if (encrypted) {
-            resolve(encrypted);
-        } else {
-            reject(new Error('Failed to get encrypted questions.'));
         }
     });
 }
@@ -124,5 +114,5 @@ async function submitAnswers(examCode, userCode, answers) { // 답변 제출
 }
 
 module.exports = {
-    getExamInformation, getQuestions, envelope, encryptQuestions, decryptQuestions, getEncryptedQuestions, submitAnswers
+    getExamInformation, getQuestions, envelope, encryptQuestions, decryptQuestions, submitAnswers
 };
