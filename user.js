@@ -50,6 +50,7 @@ function signIn(examCode, userCode) {
         if (doc2) {
             doc2.examCode = examCode;
             doc2.userCode = userCode;
+            doc2.accessTime = new Date();
             users.push(doc2);
             updateAuthCode();
         }
