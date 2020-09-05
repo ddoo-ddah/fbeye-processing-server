@@ -29,36 +29,38 @@ const users = [];
 
 function signIn(examCode, userCode) {
     return new Promise(async (resolve, reject) => {
-        const client = await db.connect();
-        const doc1 = await client.db().collection('exams').findOne({
-            accessCode: examCode
-        });
-        const doc2 = await client.db().collection('users').findOne({
-            _id: {
-                $in: doc1.users
-            },
-            accessCode: userCode
-        }, {
-            projection: {
-                _id: false,
-                email: true,
-                name: true
+        try {
+            const client = await db.connect();
+            const doc1 = await client.db().collection('exams').findOne({
+                accessCode: examCode
+            });
+            const doc2 = await client.db().collection('users').findOne({
+                _id: {
+                    $in: doc1.users
+                },
+                accessCode: userCode
+            }, {
+                projection: {
+                    _id: false,
+                    email: true,
+                    name: true
+                }
+            });
+            await client.close();
+
+            if (doc2) {
+                doc2.examCode = examCode;
+                doc2.userCode = userCode;
+                doc2.accessTime = new Date();
+                users.push(doc2);
+                updateAuthCode();
             }
-        });
-        await client.close();
 
-        if (doc2) {
-            doc2.examCode = examCode;
-            doc2.userCode = userCode;
-            doc2.accessTime = new Date();
-            users.push(doc2);
-            updateAuthCode();
-        }
-
-        if (users.find(e => e.userCode === userCode)) {
-            resolve(doc1 && doc2);
-        } else {
-            reject(new Error('Sign in failed.'));
+            console.log(`${examCode} ${userCode} signed in. ${doc2.accessTime}`);
+            resolve(true);
+        } catch (err) {
+            console.error(err);
+            resolve(false);
         }
     });
 }

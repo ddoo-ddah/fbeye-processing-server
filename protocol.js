@@ -11,6 +11,15 @@ const ok = {
     data: 'ok'
 };
 
+const signOk = {
+    type: 'RES',
+    data: 'signOk'
+};
+const signFailed = {
+    type: 'RES',
+    data: 'signFailed'
+};
+
 const authOk = {
     type: 'RES',
     data: 'authOk'
@@ -30,5 +39,5 @@ const mobileOk = {
 };
 
 module.exports = {
-    toBuffer, toObject, ok, authOk, authFailed, desktopOk, mobileOk
+    toBuffer, toObject, ok, signOk, signFailed, authOk, authFailed, desktopOk, mobileOk
 };
