@@ -5,22 +5,23 @@ const settings = require('./settings');
 
 function getUserInformation(userCode) {
     return new Promise(async (resolve, reject) => {
-        const client = await db.connect();
-        const doc = await client.db().collection('users').findOne({
-            accessCode: userCode
-        }, {
-            projection: {
-                _id: false,
-                email: true,
-                name: true,
-                accessCode: true
-            }
-        });
-        await client.close();
-        if (doc) {
+        try {
+            const client = await db.connect();
+            const doc = await client.db().collection('users').findOne({
+                accessCode: userCode
+            }, {
+                projection: {
+                    _id: false,
+                    email: true,
+                    name: true,
+                    accessCode: true
+                }
+            });
+            await client.close();
+
             resolve(doc);
-        } else {
-            reject(new Error('Failed to get user information.'));
+        } catch (err) {
+            reject(err);
         }
     });
 }
@@ -123,11 +124,7 @@ function updateAuthCode() { // 인증 코드 갱신
 function verifyAuthCode(examCode, userCode, authCode) {
     return new Promise((resolve, reject) => {
         const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-        if (found && found.authCode) {
-            resolve(authCode === found.authCode);
-        } else {
-            reject(new Error('Failed to verify the auth code.'));
-        }
+        resolve(found && found.authCode && (authCode === found.authCode));
     });
 }
 
