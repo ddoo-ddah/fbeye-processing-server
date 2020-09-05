@@ -25,6 +25,16 @@ process.set('REQ', async (connection, data) => {
             data
         }));
     }
+
+    if (data === 'startExam') { // 시험 시작하면
+        const key = exam.envelope.get(u.userCode);
+        if (key) { // 문제 복호화 키 전송
+            connection.write(protocol.toBuffer({
+                type: 'KEY',
+                data: key
+            }));
+        }
+    }
 });
 
 process.set('SIN', async (connection, data) => {
@@ -39,6 +49,7 @@ process.set('SIN', async (connection, data) => {
             type: 'INF',
             data: examInfo
         }));
+
         const userInfo = await user.getUserInformation(data.userCode); // 응시자 정보
         connection.write(protocol.toBuffer({
             type: 'USRINF',
