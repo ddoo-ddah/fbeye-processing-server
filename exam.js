@@ -57,7 +57,7 @@ function getQuestions(examCode) {
                 }
             });
 
-            resolve(questions);
+            resolve(doc.questions);
         } catch (err) {
             reject(err);
         }
