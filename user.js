@@ -52,12 +52,15 @@ function signIn(examCode, userCode) {
             if (doc2) {
                 doc2.examCode = examCode;
                 doc2.userCode = userCode;
-                doc2.accessTime = new Date();
+                doc2.accessLog = {
+                    accessTime: new Date()
+                };
+                doc2.detected = [];
                 users.push(doc2);
                 updateAuthCode();
             }
 
-            console.log(`${examCode} ${userCode} signed in. ${doc2.accessTime}`);
+            console.log(`${examCode} ${userCode} signed in. ${doc2.accessLog.accessTime}`);
             resolve(true);
         } catch (err) {
             console.error(err);
@@ -66,9 +69,20 @@ function signIn(examCode, userCode) {
     });
 }
 
-function signOut(userCode) {
+async function signOut(userCode) {
     const found = users.find(e => e.userCode === userCode);
     users.remove(found);
+
+    const client = await db.connect();
+    await client.db().collection('users').updateOne({
+        accessCode: userCode
+    }, {
+        $set: {
+            accessLog: found.accessLog,
+            detected: found.detected
+        }
+    });
+    await client.close();
 }
 
 function getUserByCode(userCode) {

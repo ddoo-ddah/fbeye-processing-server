@@ -25,7 +25,7 @@ emitter.on('REQ', async (connection, data) => {
     }
 
     if (data === 'startExam') { // 시험 시작하면
-        u.startTime = new Date();
+        u.accessLog.startTime = new Date();
         const key = exam.envelope.get(u.userCode);
         if (key) { // 문제 복호화 키 전송
             connection.write(protocol.toBuffer({
@@ -34,7 +34,7 @@ emitter.on('REQ', async (connection, data) => {
             }));
         }
     } else if (data === 'endExam') { // 시험 끝나면
-        u.endTime = new Date();
+        u.accessLog.endTime = new Date();
     }
 });
 
@@ -69,9 +69,6 @@ emitter.on('SIN', async (connection, data) => {
 
 emitter.on('DET', (connection, data) => {
     const u = await user.getUserByDesktop(connection);
-    if (!u.detected) {
-        u.detected = [];
-    }
     u.detected.push(data);
 });
 
