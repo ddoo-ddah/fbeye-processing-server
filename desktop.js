@@ -67,6 +67,14 @@ emitter.on('SIN', async (connection, data) => {
     }
 });
 
+emitter.on('DET', (connection, data) => {
+    const u = await user.getUserByDesktop(connection);
+    if (!u.detected) {
+        u.detected = [];
+    }
+    u.detected.push(data);
+});
+
 emitter.on('ANS', (connection, data) => {
     exam.submitAnswers(data.examCode, data.userCode, data.answers);
 });
