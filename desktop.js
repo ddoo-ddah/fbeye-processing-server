@@ -44,7 +44,6 @@ process.set('SIN', async (connection, data) => {
     const result = await user.signIn(data.examCode, data.userCode);
     if (result) {
         connection.write(protocol.toBuffer(protocol.signOk));
-        connection.write(protocol.toBuffer(protocol.ok)); // deprecated.
         const u = await user.getUserByCode(data.userCode);
         u.desktop = connection;
 
