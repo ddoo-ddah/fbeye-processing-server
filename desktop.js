@@ -1,23 +1,21 @@
 const net = require('./lib/net');
 const protocol = require('./protocol');
+const EventEmitter = require('events');
 const exam = require('./exam');
 const user = require('./user');
 const settings = require('./settings');
 
 const server = new net.Server();
-const process = new Map();
+const emitter = new EventEmitter();
 
 server.name = 'desktop';
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    const func = process.get(obj.type);
-    if (typeof func === 'function') {
-        func(connection, obj.data);
-    }
+    emitter.emit(obj.type, connection, obj, data);
 });
 
-process.set('REQ', async (connection, data) => {
+emitter.on('REQ', async (connection, data) => {
     const u = await user.getUserByDesktop(connection);
     if (u.mobile) {
         u.mobile.write(protocol.toBuffer({
@@ -40,7 +38,7 @@ process.set('REQ', async (connection, data) => {
     }
 });
 
-process.set('SIN', async (connection, data) => {
+emitter.on('SIN', async (connection, data) => {
     const result = await user.signIn(data.examCode, data.userCode);
     if (result) {
         connection.write(protocol.toBuffer(protocol.signOk));
@@ -69,7 +67,7 @@ process.set('SIN', async (connection, data) => {
     }
 });
 
-process.set('ANS', (connection, data) => {
+emitter.on('ANS', (connection, data) => {
     exam.submitAnswers(data.examCode, data.userCode, data.answers);
 });
 

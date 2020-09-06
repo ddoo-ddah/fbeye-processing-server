@@ -1,22 +1,20 @@
 const net = require('./lib/net');
 const protocol = require('./protocol');
+const EventEmitter = require('events');
 const user = require('./user');
 const settings = require('./settings');
 
 const server = new net.Server();
-const process = new Map();
+const emitter = new EventEmitter();
 
 server.name = 'mobile';
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    const func = process.get(obj.type);;
-    if (typeof func === 'function') {
-        func(connection, obj.data);
-    }
+    emitter.emit(obj.type, connection, obj.data);
 });
 
-process.set('AUT', async (connection, data) => {
+emitter.on('AUT', async (connection, data) => {
     const result = await user.verifyAuthCode(data.examCode, data.userCode, data.authCode);
     const u = await user.getUserByCode(data.userCode);
     if (result) {
@@ -46,7 +44,7 @@ process.set('AUT', async (connection, data) => {
     }
 });
 
-process.set('EYE', async (connection, data) => {
+emitter.on('EYE', async (connection, data) => {
     const u = await user.getUserByMobile(connection);
     if (u.desktop) {
         u.desktop.write(protocol.toBuffer({
