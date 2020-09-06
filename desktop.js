@@ -67,7 +67,7 @@ emitter.on('SIN', async (connection, data) => {
     }
 });
 
-emitter.on('DET', (connection, data) => {
+emitter.on('DET', async (connection, data) => {
     const u = await user.getUserByDesktop(connection);
     u.detected.push(data);
 });
