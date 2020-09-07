@@ -30,41 +30,44 @@ const users = [];
 
 function signIn(examCode, userCode) {
     return new Promise(async (resolve, reject) => {
-        try {
-            const client = await db.connect();
-            const doc1 = await client.db().collection('exams').findOne({
-                accessCode: examCode
-            });
-            const doc2 = await client.db().collection('users').findOne({
-                _id: {
-                    $in: doc1.users
-                },
-                accessCode: userCode
-            }, {
-                projection: {
-                    _id: false,
-                    email: true,
-                    name: true
-                }
-            });
-            await client.close();
+        if (users.find(e => (e.examCode === examCode) && (e.userCode === userCode))) { // 중복 로그인 차단
+            resolve(false);
+        } else {
+            try {
+                const client = await db.connect();
+                const doc1 = await client.db().collection('exams').findOne({
+                    accessCode: examCode
+                });
+                const doc2 = await client.db().collection('users').findOne({
+                    _id: {
+                        $in: doc1.users
+                    },
+                    accessCode: userCode
+                }, {
+                    projection: {
+                        _id: false,
+                        email: true,
+                        name: true
+                    }
+                });
+                await client.close();
 
-            if (doc2) {
                 doc2.examCode = examCode;
                 doc2.userCode = userCode;
                 doc2.accessLog = {
                     accessTime: new Date()
                 };
                 doc2.detected = [];
+
                 users.push(doc2);
                 updateAuthCode();
-            }
 
-            console.log(`${examCode} ${userCode} signed in. ${doc2.accessLog.accessTime}`);
-            resolve(true);
-        } catch (err) {
-            console.error(err);
-            resolve(false);
+                console.log(`${examCode} ${userCode} signed in. ${doc2.accessLog.accessTime}`);
+                resolve(true);
+            } catch (err) {
+                console.error(err);
+                resolve(false);
+            }
         }
     });
 }
