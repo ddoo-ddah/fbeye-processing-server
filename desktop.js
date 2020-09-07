@@ -12,7 +12,7 @@ server.name = 'desktop';
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
-    emitter.emit(obj.type, connection, obj, data);
+    emitter.emit(obj.type, connection, obj.data);
 });
 
 emitter.on('REQ', async (connection, data) => {
