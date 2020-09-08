@@ -8,7 +8,7 @@ const settings = require('./settings');
 const server = new net.Server();
 const emitter = new EventEmitter();
 
-server.name = 'desktop';
+server.name = settings.net.desktop.name;
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);

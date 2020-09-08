@@ -3,9 +3,11 @@
         "key": "privkey.key",
         "cert": "cert.crt",
         "desktop": {
+            "name": "desktop",
             "port": 10100
         },
         "mobile": {
+            "name": "mobile",
             "port": 10101
         }
     },

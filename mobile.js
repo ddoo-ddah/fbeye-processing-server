@@ -7,7 +7,7 @@ const settings = require('./settings');
 const server = new net.Server();
 const emitter = new EventEmitter();
 
-server.name = 'mobile';
+server.name = settings.net.mobile.name;
 
 server.emitter.on('data', (connection, data) => {
     const obj = protocol.toObject(data);
