@@ -26,6 +26,9 @@ emitter.on('REQ', async (connection, data) => {
 
     if (data === 'startExam') { // 시험 시작하면
         u.accessLog.startTime = new Date();
+    } else if (data === 'endExam') { // 시험 끝나면
+        u.accessLog.endTime = new Date();
+    } else if (data === 'readyExam') { // 시험 준비되면
         const key = exam.envelope.get(u.userCode);
         if (key) { // 문제 복호화 키 전송
             connection.write(protocol.toBuffer({
@@ -33,8 +36,6 @@ emitter.on('REQ', async (connection, data) => {
                 data: key
             }));
         }
-    } else if (data === 'endExam') { // 시험 끝나면
-        u.accessLog.endTime = new Date();
     }
 });
 
