@@ -80,6 +80,9 @@ emitter.on('ANS', async (connection, data) => {
 
 server.emitter.on('close', async (connection, hadError) => {
     const u = await user.getUserByDesktop(connection);
+    if (u.mobile) {
+        u.mobile.socket.end();
+    }
     user.signOut(u.userCode);
 });
 
