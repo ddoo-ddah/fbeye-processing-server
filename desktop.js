@@ -73,8 +73,9 @@ emitter.on('DET', async (connection, data) => {
     u.detected.push(data);
 });
 
-emitter.on('ANS', (connection, data) => {
-    exam.submitAnswers(data.examCode, data.userCode, data.answers);
+emitter.on('ANS', async (connection, data) => {
+    const u = await user.getUserByDesktop(connection);
+    exam.submitAnswers(u.examCode, u.userCode, data.answers);
 });
 
 server.emitter.on('close', async (connection, hadError) => {
