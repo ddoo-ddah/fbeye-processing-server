@@ -135,6 +135,15 @@ function updateAuthCode() { // 인증 코드 갱신
                 }
             }));
         }
+
+        if (e.lastAuthed && ((new Date() - e.lastAuthed) >= settings.auth.timeout)) {
+            if (e.desktop) {
+                e.desktop.write(protocol.toBuffer(protocol.authFailed));
+            }
+            if (e.mobile) {
+                e.mobile.write(protocol.toBuffer(protocol.authFailed));
+            }
+        }
     });
 }
 
