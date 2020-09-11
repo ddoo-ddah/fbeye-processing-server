@@ -16,7 +16,8 @@
     },
     "auth": {
         "size": 48,
-        "interval": 30000
+        "interval": 30000,
+        "timeout": 60000
     },
     "crypto": {
         "algorithm": "aes-256-cbc",
