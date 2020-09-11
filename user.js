@@ -150,9 +150,8 @@ function updateAuthCode() { // 인증 코드 갱신
 function verifyAuthCode(examCode, userCode, authCode) {
     return new Promise((resolve, reject) => {
         const found = users.find(e => (e.examCode === examCode) && (e.userCode === userCode));
-        const result = found && found.authCode && (authCode === found.authCode);
-        if (result) {
-            found = lastAuthed = new Date();
+        if (found && found.authCode && (authCode === found.authCode)) {
+            found.lastAuthed = new Date();
         }
         resolve(result);
     });
